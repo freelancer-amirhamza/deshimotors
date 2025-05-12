@@ -45,7 +45,7 @@ const Home = () => {
                         className="lg:hidden block w-full h-full object-scale-down"
                     />
                 </div>
-                <div className="container mx-auto grid grid-cols-5 md:grid-cols-8 lg:grid-cols-10 my-4 px-4 gap-4">
+                <div className="container mx-auto flex flex-wrap items-center justify-center my-4 px-4 gap-4">
                     {loadingCategory
                         ? new Array(10).fill(null).map((_, index) => (
                             <div
@@ -62,16 +62,18 @@ const Home = () => {
                         ))
                         : allCategory.map((category) => (
                             <div
-                                className="w-full h-full"
+                                className=" h-full"
                                 key={category._id + "category"}
                                 onClick={handleRedirectProductListPage(category?._id, category?.name)}
                             >
-                                <div>
+                                <div className=' hover:shadow-2xl w-full h-full min-w-[135px] min-h-[135px] rounded-md p-1 max-w-[135px] hover:scale-102 duration-300
+                                  max-h-[135px]  flex flex-col items-center justify-center   bg-slate-200'>
                                     <img
                                         src={category?.image}
-                                        className="w-full h-full object-scale-down"
+                                        className="w-full h-full border-3 border-slate-500 max-w-24 min-w-24 min-h-24   max-h-24 rounded-full object-center bg-amber-600 "
                                         alt={category.name}
                                     />
+                                    <p className="text-xs font-medium text-neutral-700 text-center">{category?.name} </p>
                                 </div>
                             </div>
                         ))}

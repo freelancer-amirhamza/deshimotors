@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Search from './Search'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { FaRegUserCircle } from 'react-icons/fa'
+import { IoIosMenu, IoMdMenu } from "react-icons/io";
 import useMobile from '../hooks/useMobile'
 import { BsCart4 } from "react-icons/bs";
 import { useSelector } from "react-redux"
@@ -47,7 +47,7 @@ const Header = () => {
       <div className="flex w-full bg-white flex-col h-28  justify-center lg:h-20 gap-1  shadow-md items-center sticky top-0  ">
         {
           !(isSearchPage && isMobile) && (
-            <div className="container mx-auto items-center justify-between max-sm:px-3  w-full flex  ">
+            <div className="container mx-auto items-center justify-between max-sm:px-3 px-2  w-full flex  ">
               {/* logo */}
               <Link to={"/"} className="flex sm:text-4xl text-3xl font-bold font-display">
                 <span className="text-secondary">Deshi</span>
@@ -60,8 +60,9 @@ const Header = () => {
               </div>
               {/* login and cart box */}
               <div className="flex lg:hidden">
-                <button onClick={handleMobileUser} className="text-3xl cursor-pointer text-neutral-600">
-                  <FaRegUserCircle />
+                <button onClick={handleMobileUser} 
+                className="text-3xl cursor-pointer text-neutral-600 hover:shadow border rounded">
+                  <IoMdMenu />
                 </button>
               </div>
               <div className="hidden lg:flex gap-3 items-center">
