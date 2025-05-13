@@ -42,15 +42,13 @@ const addProductReview = async(req,res)=>{
 
         const review = await ProductReview.find({productId});
         const totalReviewLength = review.length;
-        const averageReview = review.reduce((sum, reviewItem)=>{
-            sum + reviewItem.reviewValue, 0
-        })/totalReviewLength;
+        const averageReview = review.reduce((sum , reviewItem)=> sum + reviewItem.reviewValue, 0) / totalReviewLength;
         
         await Product.findByIdAndUpdate(productId, {averageReview});
         res.status(200).json({
             success: true,
             message: "Your review have been added successfully!",
-            data: newReview,
+            data: newReview, 
         })
     } catch (error) {
         return res.status(500).json({
@@ -59,16 +57,15 @@ const addProductReview = async(req,res)=>{
             message:error.messages || "Internal server error!"
         })
     }
-}
+} 
 
 
 // get review 
 
 const getAllReviews = async (req, res) => {
     try {
-        const { productId } = req.body;
+         const { productId } = req.body;
 
-        // Validate productId
         if (!productId) {
             return res.status(400).json({
                 success: false,
@@ -78,6 +75,7 @@ const getAllReviews = async (req, res) => {
         }
 
         const reviews = await ProductReview.find({ productId: productId });
+
         if (!reviews || reviews.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -89,7 +87,7 @@ const getAllReviews = async (req, res) => {
         return res.status(200).json({
             success: true,
             error: false,
-            message: "The reviews were found successfully!",
+            message: "Reviews fetched successfully!",
             data: reviews,
         });
     } catch (error) {

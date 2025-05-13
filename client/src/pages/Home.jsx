@@ -70,10 +70,10 @@ const Home = () => {
                                   max-h-[135px]  flex flex-col items-center justify-center   bg-slate-200'>
                                     <img
                                         src={category?.image}
-                                        className="w-full h-full border-3 border-slate-500 max-w-24 min-w-24 min-h-24   max-h-24 rounded-full object-center bg-amber-600 "
+                                        className="w-full h-full border-3 border-slate-500 max-w-24 min-w-24 min-h-24   max-h-24 rounded-full object-fill "
                                         alt={category.name}
                                     />
-                                    <p className="text-xs font-medium text-neutral-700 text-center">{category?.name} </p>
+                                    <p className="text-xs font-medium text-neutral-700 uppercase text-center">{category?.name} </p>
                                 </div>
                             </div>
                         ))}

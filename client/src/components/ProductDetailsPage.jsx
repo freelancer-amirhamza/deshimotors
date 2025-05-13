@@ -22,7 +22,11 @@ const ProductDetailsPage = () => {
   const [reviewMessage, setReviewMessage]= useState("");
   const user = useSelector((state)=>state.user?.user);
   const dispatch = useDispatch()
-  const reviews =useSelector((state)=>state.reviewSlice?.reviews)
+  const reviews =useSelector((state)=>state.reviewSlice?.reviews);
+
+ 
+  const averageReview = reviews && reviews.length > 0 ?
+     reviews.reduce((sum, reviewItem)=> sum + reviewItem.reviewValue , 0)/ reviews.length : 0
   
  const handleRatingChange = (getRating)=> {
         setRating(getRating)
@@ -83,19 +87,26 @@ const ProductDetailsPage = () => {
 
   const fetchProductReview = async () => {
     try {
-      const response = await Axios({
-        ...SummeryApi.getProductReview,
-        data: {
-          productId:productId,
+        if (!productId) {
+            console.error("Product ID is missing!");
+            return;
         }
-      });
-      if(response.data?.success){
-        dispatch(setReviewSlice(response.data?.data))
-      }
+
+        const response = await Axios({
+            ...SummeryApi.getProductReview,
+            data: {
+                productId: productId, 
+            },
+        });
+
+        if (response.data?.success) {
+            dispatch(setReviewSlice(response.data?.data));
+        }
     } catch (error) {
-      AxiosToastError(error)
-    } 
-  };
+      
+        console.log(error.message);
+    }
+};
 
   const handleScrollLeft = () => {
     if (image > 0) {
@@ -113,14 +124,15 @@ const ProductDetailsPage = () => {
       setImage(data?.image?.length - 1)
     }
   }
+  console.log(reviews, "review")
   useEffect(()=>{
     if(productId){
-      fetchProductReview()
+      dispatch(setReviewSlice());
     }
   },[productId])
   useEffect(() => {
     fetchProductDetails()
-    fetchProductReview()
+    
   }, [params])
   return (
     <section className='container mx-auto p-4 grid lg:grid-cols-2 bg-slate-100 '>
@@ -183,9 +195,10 @@ const ProductDetailsPage = () => {
         <div className="text-base lg:text-lg gap-4 grid">
           <div className="">
             <div className="flex gap-8 ">
-              <p className='bg-green-300 w-fit px-2 rounded-full'>10 Min</p>
+              {averageReview !== null ? <p className='bg-slate-100 text-orange-400 w-fit px-2 rounded-full'>Rating: {averageReview}/5</p> : "" }
+              
               <div className="">
-                <StarRating rating={rating}/>
+                <StarRating rating={averageReview}/>
               </div>
             </div>
             <h2 className='text-lg font-semibold text-neutral-700 lg:text-3xl'>{data.name}</h2>
@@ -242,7 +255,7 @@ const ProductDetailsPage = () => {
                     <div className="grid ">
                       <h1 className="font-semibold ml-1 text-neutral-600"> {reviewItem.userName}</h1>
                       <div className="flex max-sm:flex-col gap-4  ">
-                        <StarRating  rating={rating}/>
+                        <StarRating  rating={reviewItem?.reviewValue}/>
                       <p className="capitalize text-neutral-600">
                         {reviewItem.reviewMessage}
                       </p>
