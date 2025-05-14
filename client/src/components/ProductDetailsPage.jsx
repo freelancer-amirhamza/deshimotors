@@ -125,14 +125,10 @@ const ProductDetailsPage = () => {
     }
   }
   console.log(reviews, "review")
-  useEffect(()=>{
-    if(productId){
-      dispatch(setReviewSlice());
-    }
-  },[productId])
+  
   useEffect(() => {
     fetchProductDetails()
-    
+    fetchProductReview()
   }, [params])
   return (
     <section className='container mx-auto p-4 grid lg:grid-cols-2 bg-slate-100 '>
@@ -194,12 +190,12 @@ const ProductDetailsPage = () => {
       <div className="col-span-1">
         <div className="text-base lg:text-lg gap-4 grid">
           <div className="">
-            <div className="flex gap-8 ">
-              {averageReview !== null ? <p className='bg-slate-100 text-orange-400 w-fit px-2 rounded-full'>Rating: {averageReview}/5</p> : "" }
-              
+            <div className="flex gap-3 items-center  text-[1rem] ">
               <div className="">
                 <StarRating rating={averageReview}/>
               </div>
+              {averageReview !== null ? 
+              <p className='bg-slate-100 text-orange-500 font-semibold w-fit px-2 rounded-full'>Rating: {averageReview}</p> : "" }
             </div>
             <h2 className='text-lg font-semibold text-neutral-700 lg:text-3xl'>{data.name}</h2>
             <p className=''>{data.unit}</p>

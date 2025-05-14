@@ -92,7 +92,7 @@ const Footer = () => {
                         <span className="flex items-center mt-5">
                             <AiOutlineShop className="text-color  text-xl " />
                             <address className=" ml-4">
-                                <p className="">Merull Badda, Dhaka-1212 Bangladesh </p>
+                                <p className="">1/1/A, Oriental Bongshal Motors Parts Market, New Eskaton, Dhaka-1000 </p>
                             </address>
                         </span>
                         <span className="flex items-center mt-5">

@@ -59,7 +59,7 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
         <div>
             <div className="container mx-auto p-4">
                 <div className="flex items-center justify-between gap-4">
-                    <h1 className="text-xl text-neutral-800 font-semibold">{name}</h1>
+                    <h1 className="text-xl capitalize text-neutral-800 font-semibold">{name}</h1>
                     <Link
                         to={handleRedirectProductListPage()}
                         className="text-green-700 hover:text-green-800 font-medium bg-neutral-100 px-4 py-2 rounded"
@@ -68,7 +68,7 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
                     </Link>
                 </div>
                 <div
-                    className="flex container p-4 sm:gap-4 gap-2 items-center overflow-x-scroll no-scrollbar scroll-smooth"
+                    className="flex container p-4 max-sm:p-0 sm:gap-4 gap-[3px] items-center overflow-x-scroll no-scrollbar scroll-smooth"
                     ref={containerRef}
                 >
                     {loading
