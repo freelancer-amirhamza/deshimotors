@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 import FooterCard from './FooterCard';
 import { FiPhoneCall } from "react-icons/fi";
-import { AiOutlineHome, AiOutlineShop } from "react-icons/ai";
+import { AiOutlineShop } from "react-icons/ai";
 import { HiOutlineMail } from "react-icons/hi";
 
 

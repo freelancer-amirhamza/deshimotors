@@ -123,9 +123,9 @@ const CheckoutPage = () => {
             </div>
           </div>
           <div className="w-full lg:max-w-md grid gap-2 py-4">
-            <div className="w-full flex items-center justify-between">
+            {/* <div className="w-full flex items-center justify-between">
               <button className='bg-green-600 hover:bg-green-700 cursor-pointer w-full p-2 rounded text-white font-semibold '>Online Payment</button>
-            </div>
+            </div> */}
             <div className="w-full flex items-center justify-between">
               <button onClick={handleCashOnDelivery} className='border-green-600 border  hover:bg-green-600 cursor-pointer w-full p-2 rounded hover:text-white text-green-600 font-semibold '>Cash On Delivery</button>
             </div>

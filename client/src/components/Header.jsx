@@ -32,19 +32,11 @@ const Header = () => {
     navigate("/user")
   }
 
-  // useEffect(()=>{
-  //   const qty = cartItems.reduce((prev,curr)=>{
-  //     return prev + curr.quantity;
-  //   },0);
-  //   setTotalQty(qty);
-  //   const tPrice = cartItems.reduce((preve,curr)=>{
-  //             return preve + (curr.productId.price * curr.quantity)
-  //         },0)
-  //         setTotalPrice(tPrice)
-  // },[cartItems])
+ 
   return (
     <header>
       <div className="flex w-full bg-white flex-col h-28  justify-center lg:h-20 gap-1  shadow-md items-center sticky top-0  ">
+        
         {
           !(isSearchPage && isMobile) && (
             <div className="container mx-auto items-center justify-between max-sm:px-3 px-2  w-full flex  ">

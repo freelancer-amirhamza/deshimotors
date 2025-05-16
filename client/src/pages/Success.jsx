@@ -1,21 +1,27 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom';
 import image from "../assets/order-complete.gif"
 
 const Success = () => {
     const location = useLocation();
-    console.log(location.state.text, "location")
+
+    useEffect(()=>{
+        scrollTo({
+            top:0,
+            behavior:"auto"
+        })
+    },[])
 
     return (
         <section className="mt-2 bg-white">
             <div className="container mx-auto w-full flex justify-center">
-                <div className="w-full flex-col gap-1 rounded  md:max-w-full max-w-lg flex p-2 items-center justify-center">
+                <div className="w-full flex-col gap-1 rounded  md:max-w-4xl  max-w-lg flex p-2 items-center justify-center">
                     <p className="font-semibold text-green-800 text-xl text-center">
                         {Boolean(location.state?.text) ? location.state?.text : "Payment"} has been processed successfully!
                     </p>
                     <h2 className='text-center text-base mt-2 font-semibold text-orange-800 ' >Your Order is on it&apos;s way 🏃‍♂️</h2>
-                    <div className="w-full max-h-88 flex justify-center">
-                        <img src={image} alt="" className='w-full h-full object-fill' />
+                    <div className="w-full max-h-88 flex  justify-center">
+                        <img src={image} alt="" className='w-full h-full rounded-md object-fill' />
                     </div>
                     <div className="flex justify-between my-2 w-full max-w-lg gap-5">
                         <Link to={"/"} className='border py-1 px-2 rounded text-green-900 hover:text-white hover:bg-green-900 transition-colors duration-200 font-medium'>Go to Home</Link>
