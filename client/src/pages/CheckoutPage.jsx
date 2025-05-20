@@ -51,6 +51,37 @@ const CheckoutPage = () => {
     } catch (error) {
       AxiosToastError(error)
     }
+  };
+
+  const handleOnlinePayment = async()=>{
+    try {
+      if(deliveryFee === 0){
+        toast.error("Please select your delivery method!");
+        return;
+      };
+      const response = await Axios({
+        ...SummeryApi.onlinePaymentOrder,
+        data: {
+          list_items: cartItemsList,
+          totalAmount: totalPrice,
+          subTotalAmount: notDiscountPrice,
+          addressId: addressList[selectedAddress]?._id,
+          deliveryFee:deliveryFee,
+        }
+      });
+      if(response.data?.success){
+        window.location.href = response.data.gatewayUrl;
+        toast.success(response.data.message);
+        if(fetchCartItems){
+          fetchCartItems();
+        };
+        if(fetchOrders){
+          fetchOrders();
+        };
+      }
+    } catch (error) {
+      AxiosToastError(error)
+    }
   }
   return (
     <section className="bg-blue-50">
@@ -123,9 +154,9 @@ const CheckoutPage = () => {
             </div>
           </div>
           <div className="w-full lg:max-w-md grid gap-2 py-4">
-            {/* <div className="w-full flex items-center justify-between">
-              <button className='bg-green-600 hover:bg-green-700 cursor-pointer w-full p-2 rounded text-white font-semibold '>Online Payment</button>
-            </div> */}
+            <div className="w-full flex items-center justify-between">
+              <button onClick={handleOnlinePayment} className='bg-green-600 hover:bg-green-700 cursor-pointer w-full p-2 rounded text-white font-semibold '>Online Payment</button>
+            </div>
             <div className="w-full flex items-center justify-between">
               <button onClick={handleCashOnDelivery} className='border-green-600 border  hover:bg-green-600 cursor-pointer w-full p-2 rounded hover:text-white text-green-600 font-semibold '>Cash On Delivery</button>
             </div>

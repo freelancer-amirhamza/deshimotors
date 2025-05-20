@@ -2,7 +2,163 @@ const mongoose = require("mongoose");
 const Order = require("../models/order-model");
 const Cart = require("../models/cart-model");
 const UserModal = require("../models/user-model");
-const CustomError = require("../middleware/error");
+const Address = require("../models/address-model");
+const SSLCommerzPayment = require("sslcommerz-lts")
+require("dotenv").config();
+const store_id = process.env.SSLZ_STORE_ID
+const store_passwd = process.env.SSLZ_SECRET_KEY
+const is_live = false //true for live, false for sandbox
+
+
+const onlinePaymentOrder = async (req, res) => {
+    try {
+        const { list_items, totalAmount, subTotalAmount, addressId, deliveryFee } = req.body;
+        const userId = req.userId;
+        const tran_id = `ORD-${new mongoose.Types.ObjectId()}`;
+
+        const orderPayload = {
+            userId: userId,
+            orderId: tran_id,
+            products: list_items.map((el) => ({
+                productId: el.productId?._id,
+                product_details: {
+                    name: el.productId.name,
+                    image: el.productId?.image,
+                    price: el.productId?.price,
+                    discount: el.productId?.discount,
+                    unit: el.productId?.unit,
+                },
+                quantity: el?.quantity,
+            })),
+            delivery_address: addressId,
+            payment_status: "processing",
+            order_status: "processing",
+            paymentId: "",
+            subTotalAmount,
+            totalAmount,
+        }
+        // create an order
+        await Order.create(orderPayload);
+        // remove the cart items
+        await Cart.deleteMany({ userId: userId });
+        // update in user
+        const updateInUser = UserModal.updateOne(
+            { _id: userId },
+            { shopping_cart: [] },
+        );
+        const user = await UserModal.findOne({ _id: userId });
+        const address = await Address.findById(addressId);
+        const data = {
+            total_amount: totalAmount + deliveryFee,
+            currency: 'BDT',
+            tran_id: tran_id,
+            success_url: `${process.env.SERVER_URL}/api/order/payment-success?tran_id=${tran_id}&userId=${userId}`,
+            fail_url: `${process.env.SERVER_URL}/api/order/payment-fail?tran_id=${tran_id}&userId=${userId}`,
+            cancel_url: `${process.env.SERVER_URL}/api/order/payment-cancel?tran_id=${tran_id}&userId=${userId}`,
+            ipn_url: `${process.env.SERVER_URL}/api/order/ipn`,
+            shipping_method: 'Courier',
+            product_name: 'Order Products',
+            product_category: 'Mixed',
+            product_profile: 'general',
+            cus_name: user.name,
+            cus_email: user.email,
+            cus_add1: address.addressLine,
+            cus_city: address.city,
+            cus_state: address.state,
+            cus_postcode: address.pinCode,
+            cus_country: address.country,
+            cus_phone: address.phone,
+            ship_name: user.name,
+            ship_add1: address.addressLine,
+            ship_city: address.city,
+            ship_state: address.state,
+            ship_postcode: address.pinCode,
+            ship_country: address.country,
+        };
+
+        const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
+        sslcz.init(data).then(apiResponse => {
+            let GatewayPageURL = apiResponse.GatewayPageURL;
+            res.status(200).json({
+                success: true,
+                error: false,
+                gatewayUrl: GatewayPageURL,
+                message: "Payment gateway URL generated successfully!",
+            });
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: true,
+            message: error.message || "Internal server error!",
+        })
+    }
+};
+
+const handleSuccess = async(req, res)=>{
+    try {
+        const {tran_id, userId} = req.query;
+        await Order.findOneAndUpdate(
+            {orderId: tran_id, userId: userId},
+            {
+                payment_status: "paid",
+                order_status: "confirmed",
+                paymentId: tran_id,
+            }
+        );
+        res.redirect(`${process.env.CLIENT_URL}/success`)
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: true,
+            message: error.message ||  "Internal server error!",
+        })
+    }
+}
+
+const handleFail = async(req, res)=>{
+    try {
+        const {tran_id, userId}= req.query;
+        await Order.findOneAndUpdate(
+            {orderId: tran_id, userId: userId},
+            {
+                payment_status: "failed",
+                order_status: "failed",
+                paymentId: tran_id,
+            }
+        );
+        res.redirect(`${process.env.CLIENT_URL}/failed`);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: true,
+            message: error.message || "Internal server error!",
+        })
+    }
+};
+
+const handleCancel = async(req, res)=>{
+    try {
+        const {tran_id, userId}= req.query;
+        await Order.findOneAndUpdate(
+            {orderId: tran_id, userId: userId},
+            {
+                payment_status: "canceled",
+                order_status: "canceled",
+                paymentId: tran_id,
+            }
+        );
+        res.redirect(`${process.env.CLIENT_URL}/canceled`);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: true,
+            message: error.message || "Internal server error!",
+        })
+    }
+}
+
+
 
 const cashOnDeliveryOrder = async (req, res) => {
     try {
@@ -37,7 +193,7 @@ const cashOnDeliveryOrder = async (req, res) => {
         const createOrder = await Order.create(payload);
 
         // remove from the cart
-        const removeCartItems = await Cart.deleteMany({ userId: userId });
+        await Cart.deleteMany({ userId: userId });
         const updateInUser = UserModal.updateOne(
             { _id: userId },
             { shopping_cart: [] }
@@ -178,4 +334,8 @@ module.exports = {
     getAdminOrdersDetails,
     updateAdminOrder,
     deleteAdminOrder,
+    onlinePaymentOrder,
+    handleSuccess,
+    handleFail,
+    handleCancel,
 };
