@@ -443,10 +443,10 @@ const resetPassword = async (req, res) => {
 
 const refreshToken = async (req, res) => {
      try {
-        const refreshToken = req.cookies.refreshToken || req?.headers?.authorization?.split(" ")[1]  /// [ Bearer token]
+        const refreshToken = request.cookies.refreshToken || request?.headers?.authorization?.split(" ")[1]  /// [ Bearer token]
 
         if(!refreshToken){
-            return res.status(401).json({
+            return response.status(401).json({
                 message : "Invalid token",
                 error  : true,
                 success : false
@@ -456,7 +456,7 @@ const refreshToken = async (req, res) => {
         const verifyToken = await jwt.verify(refreshToken,process.env.SECRET_KEY_REFRESH_TOKEN)
 
         if(!verifyToken){
-            return res.status(401).json({
+            return response.status(401).json({
                 message : "token is expired",
                 error : true,
                 success : false
@@ -473,9 +473,9 @@ const refreshToken = async (req, res) => {
             sameSite : "None"
         }
 
-        res.cookie('accessToken',newAccessToken,cookiesOption)
+        response.cookie('accessToken',newAccessToken,cookiesOption)
 
-        return res.json({
+        return response.json({
             message : "New Access token generated",
             error : false,
             success : true,
@@ -486,7 +486,7 @@ const refreshToken = async (req, res) => {
 
 
     } catch (error) {
-        return res.status(500).json({
+        return response.status(500).json({
             message : error.message || error,
             error : true,
             success : false

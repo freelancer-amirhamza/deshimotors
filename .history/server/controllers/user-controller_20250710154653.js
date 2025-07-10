@@ -149,7 +149,7 @@ const loginUser = async (req, res) => {
         const accesstoken = await generateRefreshToken(user._id)
         const refreshToken = await generateRefreshToken(user._id)
 
-        const updateUser = await UserModal.findByIdAndUpdate(user?._id,{
+        const updateUser = await UserM.findByIdAndUpdate(user?._id,{
             last_login_date : new Date()
         })
 
@@ -442,54 +442,51 @@ const resetPassword = async (req, res) => {
 
 
 const refreshToken = async (req, res) => {
-     try {
-        const refreshToken = req.cookies.refreshToken || req?.headers?.authorization?.split(" ")[1]  /// [ Bearer token]
+    try {
+        const refreshToken = req.cookies.refreshToken ||
+            req?.headers?.authorization?.split(" ")[1];
 
-        if(!refreshToken){
-            return res.status(401).json({
-                message : "Invalid token",
-                error  : true,
-                success : false
+        if (!refreshToken) {
+            return res.status(500).json({
+                success: false,
+                error: true,
+                message: "Invalid token!"
             })
         }
-
-        const verifyToken = await jwt.verify(refreshToken,process.env.SECRET_KEY_REFRESH_TOKEN)
-
+        
+        const verifyToken = await jwt.verify(refreshToken, process.env.SECRET_KEY_REFRESH_TOKEN);
         if(!verifyToken){
-            return res.status(401).json({
-                message : "token is expired",
-                error : true,
-                success : false
+            return res.status(400).json({
+                success: false,
+                error: true,
+                message: "token is expired"
             })
         }
 
-        const userId = verifyToken?._id
+        const userId = verifyToken._id;
 
-        const newAccessToken = await generatedAccessToken(userId)
-
+        const newAccessToken = await generateAccessToken(userId)
         const cookiesOption = {
-            httpOnly : true,
-            secure : true,
-            sameSite : "None"
+            httpOnly: true,
+            secure: true,
+            sameSite: "None",
         }
 
         res.cookie('accessToken',newAccessToken,cookiesOption)
 
-        return res.json({
-            message : "New Access token generated",
-            error : false,
-            success : true,
-            data : {
-                accessToken : newAccessToken
+        return res.status(200).json({
+            success:true,
+            error: false,
+            message: "New access token generated successfully!",
+            data: {
+                accessToken: newAccessToken,
             }
-        })
-
-
+        });
     } catch (error) {
         return res.status(500).json({
-            message : error.message || error,
-            error : true,
-            success : false
+            success: false,
+            error: true,
+            message: error.message || "something is wrong!"
         })
     }
 };
