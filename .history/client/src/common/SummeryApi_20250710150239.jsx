@@ -21,10 +21,6 @@ const SummeryApi = {
         url: "/api/user/reset-password",
         method: "put",
     },
-    refreshToken: {
-        url: 'api/user/refresh-token',
-        method: 'post'
-    },
     user_details: {
         url: "/api/user/user-details",
         method: "get",
@@ -113,22 +109,22 @@ const SummeryApi = {
         url: "/api/cart/create",
         method: "post",
     },
-    getCartItems: {
+    getCartItems:{
         url: "/api/cart/get-carts",
         method: "get",
     },
-    updateCartItem: {
+    updateCartItem:{
         url: "/api/cart/update-cart",
         method: "put",
     },
-    deleteCartItem: {
+    deleteCartItem:{
         url: "/api/cart/delete-cart",
         method: "delete"
     },
     addAddress: {
         url: "/api/address/create",
         method: "post",
-    },
+    }, 
     getAddress: {
         url: "/api/address/get",
         method: "get",
@@ -137,7 +133,7 @@ const SummeryApi = {
         url: "/api/address/update",
         method: "put"
     },
-    deleteAddress: {
+    deleteAddress : {
         url: "/api/address/delete",
         method: "delete"
     },
@@ -145,7 +141,7 @@ const SummeryApi = {
         url: "/api/order/cash-on-delivery",
         method: "post",
     },
-    onlinePaymentOrder: {
+    onlinePaymentOrder:{
         url: "/api/order/online-payment",
         method: "post",
     },
@@ -158,23 +154,23 @@ const SummeryApi = {
         method: "get",
     },
     updateAdminOrder: {
-        url: "/api/order/update-admin-order",
+        url:"/api/order/update-admin-order",
         method: "put",
     },
     deleteAdminOrder: {
         url: "/api/order/delete-admin-order",
         method: "delete",
     },
-    addProductReview: {
+    addProductReview:{
         url: "/api/review/add-review",
         method: "post"
     },
-    getProductReview: {
+    getProductReview:{
         url: "/api/review/get-review",
         method: "post",
     },
-
-
+    
+    
 };
 
 export default SummeryApi;
