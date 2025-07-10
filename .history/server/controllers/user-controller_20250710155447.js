@@ -108,65 +108,75 @@ const verifyEmail = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        if (!email || !password) {
+        const { email , password } = req.body;
+
+        if(!email || !password){
             return res.status(400).json({
-                success: false,
-                error: true,
-                message: "Please provide email and password!"
-            })
-        }
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                error: true,
-                message: "The user is not found!"
+                message : "provide email, password",
+                error : true,
+                success : false
             })
         }
 
-        if (user.status !== "Active") {
+        const user = await UserModal.findOne({ email })
+
+        if(!user){
             return res.status(400).json({
-                success: false,
-                error: true,
-                message: "This User is not active, Please Contact to Admin"
+                message : "User not register",
+                error : true,
+                success : false
             })
         }
-        const checkPassword = await bcryptjs.compare(password, user.password);
-        if (!checkPassword) {
-            return res.status(400).json({
-                success: false,
-                error: true,
-                message: "Incorrect Password, Please check your password!"
-            })
-        };
 
-        const refreshToken = await generateRefreshToken(user._id);
-        const accessToken = await generateAccessToken(user._id);
-        const updateUser = await UserModal.findByIdAndUpdate(user._id, {
-            last_login_date: new Date()
+        if(user.status !== "Active"){
+            return res.status(400).json({
+                message : "Contact to Admin",
+                error : true,
+                success : false
+            })
+        }
+
+        const checkPassword = await bcryptjs.compare(password,user.password)
+
+        if(!checkPassword){
+            return res.status(400).json({
+                message : "Check your password",
+                error : true,
+                success : false
+            })
+        }
+
+        const accesstoken = await generateRefreshToken(user._id)
+        const refreshToken = await generateRefreshToken(user._id)
+
+        const updateUser = await UserModal.findByIdAndUpdate(user?._id,{
+            last_login_date : new Date()
         })
 
         const cookiesOption = {
-            httpOnly: true,
-            secure: true,
-            sameSite: "None",
-        };
+            httpOnly : true,
+            secure : true,
+            sameSite : "None"
+        }
+        res.cookie('accessToken',accesstoken,cookiesOption)
+        res.cookie('refreshToken',refreshToken,cookiesOption)
 
-        res.cookie("accessToken", accessToken, cookiesOption);
-        res.cookie("refreshToken", refreshToken, cookiesOption);
-
-        return res.status(200).json({
-            success: true,
-            error: false,
-            message: "The user login successfully!",
-            data: {
-                accessToken,
-                refreshToken,
+        return res.json({
+            message : "Login successfully",
+            error : false,
+            success : true,
+            data : {
+                accesstoken,
+                refreshToken
             }
         })
+
     } catch (error) {
-        return res.status({})
+        return res.status(500).json({
+            message : error.message || error,
+            error : true,
+            success : false
+        })
     }
 }
 
@@ -432,51 +442,54 @@ const resetPassword = async (req, res) => {
 
 
 const refreshToken = async (req, res) => {
-    try {
-        const refreshToken = req.cookies.refreshToken ||
-            req?.headers?.authorization?.split(" ")[1];
+     try {
+        const refreshToken = req.cookies.refreshToken || req?.headers?.authorization?.split(" ")[1]  /// [ Bearer token]
 
-        if (!refreshToken) {
-            return res.status(500).json({
-                success: false,
-                error: true,
-                message: "Invalid token!"
+        if(!refreshToken){
+            return .status(401).json({
+                message : "Invalid token",
+                error  : true,
+                success : false
             })
         }
-        
-        const verifyToken = await jwt.verify(refreshToken, process.env.SECRET_KEY_REFRESH_TOKEN);
+
+        const verifyToken = await jwt.verify(refreshToken,process.env.SECRET_KEY_REFRESH_TOKEN)
+
         if(!verifyToken){
-            return res.status(400).json({
-                success: false,
-                error: true,
-                message: "token is expired"
+            return .status(401).json({
+                message : "token is expired",
+                error : true,
+                success : false
             })
         }
 
-        const userId = verifyToken._id;
+        const userId = verifyToken?._id
 
-        const newAccessToken = await generateAccessToken(userId)
+        const newAccessToken = await generatedAccessToken(userId)
+
         const cookiesOption = {
-            httpOnly: true,
-            secure: true,
-            sameSite: "None",
+            httpOnly : true,
+            secure : true,
+            sameSite : "None"
         }
 
-        res.cookie('accessToken',newAccessToken,cookiesOption)
+        .cookie('accessToken',newAccessToken,cookiesOption)
 
-        return res.status(200).json({
-            success:true,
-            error: false,
-            message: "New access token generated successfully!",
-            data: {
-                accessToken: newAccessToken,
+        return .json({
+            message : "New Access token generated",
+            error : false,
+            success : true,
+            data : {
+                accessToken : newAccessToken
             }
-        });
+        })
+
+
     } catch (error) {
-        return res.status(500).json({
-            success: false,
-            error: true,
-            message: error.message || "something is wrong!"
+        return .status(500).json({
+            message : error.message || error,
+            error : true,
+            success : false
         })
     }
 };
