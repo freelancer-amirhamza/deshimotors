@@ -1,5 +1,5 @@
 import axios from "axios";
-import SummeryApi, { baseUrl } from "../common/SummeryApi";
+import { baseUrl } from "../common/SummeryApi";
 
 const Axios = axios.create({
     baseURL : baseUrl,
@@ -54,7 +54,7 @@ Axios.interceptors.request.use(
 const refreshAccessToken = async(refreshToken)=>{
     try {
         const response = await Axios({
-            ...SummeryApi.refreshToken,
+            ...SummaryApi.refreshToken,
             headers : {
                 Authorization : `Bearer ${refreshToken}`
             }
